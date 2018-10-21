@@ -5,7 +5,7 @@ unit Unit2;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, CheckLst,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   StdCtrls;
 
 type
@@ -14,12 +14,17 @@ type
 
   TForm2 = class(TForm)
     Button1: TButton;
-    grade: TComboBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    year: TComboBox;
+    month: TComboBox;
+    year2: TComboBox;
     procedure Button1Click(Sender: TObject);
   private
 
   public
-    method : integer;
+
   end;
 
 const
@@ -38,7 +43,7 @@ implementation
 
 procedure TForm2.Button1Click(Sender: TObject);
 begin
-  ShowMessage('正在加载');
+  form2.Close;
 end;
 
 end.

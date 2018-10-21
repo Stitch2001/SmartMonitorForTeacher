@@ -6,32 +6,31 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Unit2;
+  Unit2, Windows;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TForm)
-    DeleteTimerTask: TButton;
-    GetDailyExcel: TButton;
-    CreateTimerTask: TButton;
-    GetWeeklyExcel: TButton;
+    getExcelByDate: TButton;
+    deleteTimerTask: TButton;
+    getDailyExcel: TButton;
+    createTimerTask: TButton;
+    getWeeklyExcel: TButton;
     procedure Button1Click(Sender: TObject);
-    procedure CreateTimerTaskClick(Sender: TObject);
-    procedure DeleteTimerTaskClick(Sender: TObject);
-    procedure GetWeeklyExcelClick(Sender: TObject);
-    procedure GetDailyExcelClick(Sender: TObject);
+    procedure createTimerTaskClick(Sender: TObject);
+    procedure deleteTimerTaskClick(Sender: TObject);
+    procedure getExcelByDateClick(Sender: TObject);
+    procedure getWeeklyExcelClick(Sender: TObject);
+    procedure getDailyExcelClick(Sender: TObject);
   private
 
   public
 
   end;
 
-const
-  CREATE_TASK = 0;
-  GET_DAILY_EXCEL = 1;
-  GET_WEEKLY_EXCEL = 2;
+
 var
   Form1: TForm1;
 
@@ -46,27 +45,30 @@ begin
 
 end;
 
-procedure TForm1.CreateTimerTaskClick(Sender: TObject);
-begin
-  form2.method:=CREATE_TASK;
-  form2.Show;
-end;
-
-procedure TForm1.DeleteTimerTaskClick(Sender: TObject);
+procedure TForm1.createTimerTaskClick(Sender: TObject);
 begin
 
 end;
 
-procedure TForm1.GetWeeklyExcelClick(Sender: TObject);
+procedure TForm1.deleteTimerTaskClick(Sender: TObject);
 begin
-  form2.method:=GET_WEEKLY_EXCEL;
+
+end;
+
+procedure TForm1.getExcelByDateClick(Sender: TObject);
+begin
   form2.Show;
 end;
 
-procedure TForm1.GetDailyExcelClick(Sender: TObject);
+procedure TForm1.getWeeklyExcelClick(Sender: TObject);
 begin
-  form2.method:=GET_DAYLY_EXCEL;
-  form2.Show;
+
+end;
+
+procedure TForm1.getDailyExcelClick(Sender: TObject);
+begin
+  getDailyExcel.Enabled:= false;
+  ShellExecute(0,'open','daily_download.exe','--Grade 1','',SW_SHOW);
 end;
 
 end.

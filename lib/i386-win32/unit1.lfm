@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 307
-  Height = 238
-  Top = 126
-  Width = 258
+  Left = 270
+  Height = 273
+  Top = 131
+  Width = 289
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = '智慧纪检'
-  ClientHeight = 238
-  ClientWidth = 258
+  Caption = '智慧纪检 - 高一专版'
+  ClientHeight = 273
+  ClientWidth = 289
   Icon.Data = {
     B5F4050000000100010000000000010020009FF405001600000089504E470D0A
     1A0A0000000D49484452000001FE000001FE08060000007D6F6C250005F46649
@@ -12209,40 +12209,49 @@ object Form1: TForm1
     DCFB05D3FF220C8D73170E85030000000049454E44AE426082
   }
   LCLVersion = '1.8.4.0'
-  object CreateTimerTask: TButton
-    Left = 48
-    Height = 40
-    Top = 24
-    Width = 155
+  object createTimerTask: TButton
+    Left = 24
+    Height = 41
+    Top = 16
+    Width = 240
     Caption = '创建计划任务'
-    OnClick = CreateTimerTaskClick
+    OnClick = createTimerTaskClick
     TabOrder = 0
   end
-  object GetDailyExcel: TButton
-    Left = 48
-    Height = 40
-    Top = 120
-    Width = 155
+  object getDailyExcel: TButton
+    Left = 24
+    Height = 41
+    Top = 115
+    Width = 240
     Caption = '获取今日检查表'
-    OnClick = GetDailyExcelClick
+    OnClick = getDailyExcelClick
     TabOrder = 1
   end
-  object GetWeeklyExcel: TButton
-    Left = 48
-    Height = 40
-    Top = 168
-    Width = 155
+  object getWeeklyExcel: TButton
+    Left = 24
+    Height = 41
+    Top = 165
+    Width = 240
     Caption = '获取周汇总表'
-    OnClick = GetWeeklyExcelClick
+    OnClick = getWeeklyExcelClick
     TabOrder = 2
   end
-  object DeleteTimerTask: TButton
-    Left = 48
-    Height = 40
-    Top = 72
-    Width = 155
+  object deleteTimerTask: TButton
+    Left = 24
+    Height = 41
+    Top = 66
+    Width = 240
     Caption = '清空计划任务'
-    OnClick = DeleteTimerTaskClick
+    OnClick = deleteTimerTaskClick
     TabOrder = 3
+  end
+  object getExcelByDate: TButton
+    Left = 24
+    Height = 41
+    Top = 215
+    Width = 240
+    Caption = '（备用）按日期获取'
+    OnClick = getExcelByDateClick
+    TabOrder = 4
   end
 end
