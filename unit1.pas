@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Unit2, Windows;
+  Unit2, Windows, Unit3;
 
 type
 
@@ -17,7 +17,9 @@ type
     deleteTimerTask: TButton;
     getDailyExcel: TButton;
     createTimerTask: TButton;
+    About: TButton;
     getWeeklyExcel: TButton;
+    procedure AboutClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure createTimerTaskClick(Sender: TObject);
     procedure deleteTimerTaskClick(Sender: TObject);
@@ -43,6 +45,11 @@ implementation
 procedure TForm1.Button1Click(Sender: TObject);
 begin
 
+end;
+
+procedure TForm1.AboutClick(Sender: TObject);
+begin
+  form3.Show;
 end;
 
 procedure TForm1.createTimerTaskClick(Sender: TObject);

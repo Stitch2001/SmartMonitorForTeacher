@@ -348,11 +348,13 @@ absent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 isFirstResult = True
 time = ''
 for result in query_list:
+    print(result.get('isDownloaded'))
     if result.get('isDownloaded') == 1:
         pattern = result.get('pattern')
         checker = result.get('checker')
         checkTime = str(result.get('createdAt'))
-        if ((checkTime[0:10] != time[0:10]) or (pattern != pat)) and (not isFirstResult) : break
+        if ((checkTime[0:10] != time[0:10]) or (int(pattern) != int(pat))) and (not isFirstResult) :
+            continue
         classroom = result.get('classroom')
         ought[classroom] = result.get('ought')
         fact[classroom] = result.get('fact')
@@ -374,7 +376,7 @@ for result in query_list2:
         classroom = result.get('classroom')
         event[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
         score[classroom] = score[classroom]+result.get('score')
-        if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): break
+        if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): continue
         #result.set('isDownloaded',2)
         #result.save();
 

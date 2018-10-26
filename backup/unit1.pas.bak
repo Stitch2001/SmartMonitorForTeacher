@@ -68,7 +68,8 @@ end;
 procedure TForm1.getDailyExcelClick(Sender: TObject);
 begin
   getDailyExcel.Enabled:= false;
-  ShellExecute(0,'open','daily_download.exe','--Grade 1','',SW_SHOW);
+  ShellExecute(0,'open','daily_download.exe','--Grade 0 --Pattern 0','',SW_SHOW);
+  ShellExecute(0,'open','daily_download.exe','--Grade 0 --Pattern 1','',SW_SHOW);
 end;
 
 end.

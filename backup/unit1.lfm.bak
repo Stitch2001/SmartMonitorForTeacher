@@ -1,12 +1,12 @@
 object Form1: TForm1
   Left = 270
-  Height = 273
+  Height = 321
   Top = 131
   Width = 289
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = '智慧纪检 - 高一专版'
-  ClientHeight = 273
+  ClientHeight = 321
   ClientWidth = 289
   Icon.Data = {
     B5F4050000000100010000000000010020009FF405001600000089504E470D0A
@@ -12253,5 +12253,14 @@ object Form1: TForm1
     Caption = '（备用）按日期获取'
     OnClick = getExcelByDateClick
     TabOrder = 4
+  end
+  object About: TButton
+    Left = 24
+    Height = 41
+    Top = 264
+    Width = 240
+    Caption = '关于'
+    OnClick = AboutClick
+    TabOrder = 5
   end
 end

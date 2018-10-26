@@ -1,13 +1,11 @@
-object Form1: TForm1
-  Left = 270
-  Height = 321
-  Top = 131
-  Width = 289
-  BorderIcons = [biSystemMenu, biMinimize]
-  BorderStyle = bsSingle
-  Caption = '智慧纪检 - 高一专版'
-  ClientHeight = 321
-  ClientWidth = 289
+object Form3: TForm3
+  Left = 276
+  Height = 161
+  Top = 171
+  Width = 258
+  Caption = '关于'
+  ClientHeight = 161
+  ClientWidth = 258
   Icon.Data = {
     B5F4050000000100010000000000010020009FF405001600000089504E470D0A
     1A0A0000000D49484452000001FE000001FE08060000007D6F6C250005F46649
@@ -12209,58 +12207,44 @@ object Form1: TForm1
     DCFB05D3FF220C8D73170E85030000000049454E44AE426082
   }
   LCLVersion = '1.8.4.0'
-  object createTimerTask: TButton
-    Left = 24
-    Height = 41
-    Top = 16
-    Width = 240
-    Caption = '创建计划任务'
-    OnClick = createTimerTaskClick
-    TabOrder = 0
+  object Label1: TLabel
+    Left = 40
+    Height = 17
+    Top = 24
+    Width = 182
+    Caption = '广东北江中学第34届学生会纪检部'
+    ParentColor = False
   end
-  object getDailyExcel: TButton
-    Left = 24
-    Height = 41
-    Top = 115
-    Width = 240
-    Caption = '获取今日检查表'
-    OnClick = getDailyExcelClick
-    TabOrder = 1
+  object Label2: TLabel
+    Left = 80
+    Height = 17
+    Top = 48
+    Width = 104
+    Caption = '副部长 邓文狄 制作'
+    ParentColor = False
   end
-  object getWeeklyExcel: TButton
-    Left = 24
-    Height = 41
-    Top = 165
-    Width = 240
-    Caption = '获取周汇总表'
-    OnClick = getWeeklyExcelClick
-    TabOrder = 2
+  object Label3: TLabel
+    Left = 64
+    Height = 17
+    Top = 72
+    Width = 137
+    Caption = '联系电话：13005375473'
+    ParentColor = False
   end
-  object deleteTimerTask: TButton
+  object Label4: TLabel
     Left = 24
-    Height = 41
-    Top = 66
-    Width = 240
-    Caption = '清空计划任务'
-    OnClick = deleteTimerTaskClick
-    TabOrder = 3
+    Height = 17
+    Top = 96
+    Width = 218
+    Caption = '联系邮箱：beizhongdvd@foxmail.com'
+    ParentColor = False
   end
-  object getExcelByDate: TButton
-    Left = 24
-    Height = 41
-    Top = 215
-    Width = 240
-    Caption = '（备用）按日期获取'
-    OnClick = getExcelByDateClick
-    TabOrder = 4
-  end
-  object About: TButton
-    Left = 24
-    Height = 41
-    Top = 264
-    Width = 240
-    Caption = '关于'
-    OnClick = AboutClick
-    TabOrder = 5
+  object Label5: TLabel
+    Left = 72
+    Height = 17
+    Top = 120
+    Width = 120
+    Caption = '本人将长期维护此软件'
+    ParentColor = False
   end
 end
