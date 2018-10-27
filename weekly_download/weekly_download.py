@@ -14,11 +14,11 @@ import leancloud
 def initLeanCloud():
     leancloud.init("kJ4C4D7mWjjAD2X5G3JpPe81-gzGzoHsz", "MwsllyERC65LKHtrq2qE2ifL")
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
 
 # 生成表格
 import xlwt
-def MakeExcel(grade):
+def MakeExcel(grade,absent,score,beginDate,endDate):
 
     if grade == SENIOR_1 :
         gradeString = '高一'
@@ -99,36 +99,35 @@ def MakeExcel(grade):
     while j <= 18 :
         sheet.write_merge(i, i, 0, 0, gradeString+'（'+str(j)+'）', style2)
         if (absent[1][j]+score[1][j] != 0) :
-            sheet.write_merge(i, i, 1, 1, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 1, 1, '-'+str(absent[1][j]+score[1][j]), style2)
         else : sheet.write_merge(i, i, 1, 1, '', style2)
         if (absent[2][j]+score[2][j] != 0) :
-            sheet.write_merge(i, i, 2, 2, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 2, 2, '-'+str(absent[2][j]+score[2][j]), style2)
         else : sheet.write_merge(i, i, 2, 2, '', style2)
         if (absent[3][j]+score[3][j] != 0) :
-            sheet.write_merge(i, i, 3, 3, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 3, 3, '-'+str(absent[3][j]+score[3][j]), style2)
         else : sheet.write_merge(i, i, 3, 3, '', style2)
         if (absent[4][j]+score[4][j] != 0) :
-            sheet.write_merge(i, i, 4, 4, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 4, 4, '-'+str(absent[4][j]+score[4][j]), style2)
         else : sheet.write_merge(i, i, 4, 4, '', style2)
         if (absent[5][j]+score[5][j] != 0) :
-            sheet.write_merge(i, i, 5, 5, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 5, 5, '-'+str(absent[5][j]+score[5][j]), style2)
         else : sheet.write_merge(i, i, 5, 5, '', style2)
         if (absent[6][j]+score[6][j] != 0) :
-            sheet.write_merge(i, i, 6, 6, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 6, 6, '-'+str(absent[6][j]+score[6][j]), style2)
         else : sheet.write_merge(i, i, 6, 6, '', style2)
         if (absent[7][j]+score[7][j] != 0) :
-            sheet.write_merge(i, i, 7, 7, '-'+str(absent[1][j])+str(score[1][j]), style2)
+            sheet.write_merge(i, i, 7, 7, '-'+str(absent[7][j]+score[7][j]), style2)
         else : sheet.write_merge(i, i, 7, 7, '', style2)
         i += 1
         j += 1
 
     #对三个年级的19/20号班级分类讨论
-    ###########################################################################
     if grade == SENIOR_1 :
         i = 0
-        while i <= 4 :
+        while i <= 7 :
+            sheet.write_merge(21, 21, i, i, '', style2)
             sheet.write_merge(22, 22, i, i, '', style2)
-            sheet.write_merge(23, 23, i, i, '', style2)
             i += 1
     elif grade == SENIOR_2:
         # 抓取初二应到实到数据
@@ -137,21 +136,26 @@ def MakeExcel(grade):
         gradeQuery.equal_to('grade', JUNIOR_2)
         query_list = gradeQuery.find()
         # 处理应到实到数据
-        ought1 = [0, 0, 0]
-        fact1 = [0, 0, 0]
-        leave1 = [0, 0, 0]
-        temporary1 = [0, 0, 0]
-        absent1 = [0, 0, 0]
+        absent1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        isFirstResult = True
+        lastDayOfWeek = 1
         for result in query_list:
-            if result.get('isDownloaded') == 1:
+            if result.get('isWeeklyDownloaded') == False:
+                dayOfWeek = result.get('dayOfWeek')
+                if ((dayOfWeek - lastDayOfWeek) > 1):  # 如果时间间隔大于1天，则说明已经是下一周
+                    if (not isFirstResult):
+                        break
+                elif ((dayOfWeek - lastDayOfWeek) < 0):  # 如果有时间间隔小于0的情况，则必定是从周日到周一，否则就是下一周了
+                    if (dayOfWeek != 1 or lastDayOfWeek != 7):
+                        break
                 classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
+                absent1[dayOfWeek][classroom] = result.get('absent')
+                lastDayOfWeek = dayOfWeek
+                endDate = str(result.get('createdAt'))[0:10]
+                if isFirstResult:
+                    isFirstResult = False
+                    beginDate = str(result.get('createdAt'))
+                # result.set('isWeeklyDownloaded',True)
                 # result.save();
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
@@ -159,61 +163,86 @@ def MakeExcel(grade):
         situationQuery.equal_to('grade', JUNIOR_2)
         query_list2 = situationQuery.find()
         # 处理扣分数据
-        event1 = ["", "", ""]
-        score1 = [0, 0, 0]
+        score1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        isFirstResult1 = True
+        lastDayOfWeek = 1
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
+            if result.get('isWeeklyDownloaded') == False:
+                dayOfWeek = result.get('dayOfWeek')
+                if ((dayOfWeek - lastDayOfWeek) > 1):  # 如果时间间隔大于1天，则说明已经是下一周
+                    if (not isFirstResult1):
+                        break
+                elif ((dayOfWeek - lastDayOfWeek) < 0):  # 如果有时间间隔小于0的情况，则必定是从周日到周一，否则就是下一周了
+                    if (dayOfWeek != 1 or lastDayOfWeek != 7):
+                        break
                 classroom = result.get('classroom')
-                event1[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
-                score1[classroom] = score[classroom]+result.get('score')
-                #result.set('isDownloaded',2)
-                #result.save();
+                score1[dayOfWeek][classroom] += result.get('score')
+                print(score1[dayOfWeek][classroom])
+                lastDayOfWeek = dayOfWeek
+                isFirstResult1 = False
+                # result.set('isWeeklyDownloaded',True)
+                # result.save();
         #写入表格
-        sheet.write_merge(22, 22, 0, 0, '初二（1）', style2)
-        sheet.write_merge(22, 22, 1, 1, str(fact1[1])+' / '+str(ought1[1]), style2)
-        situationString = ''
-        if absent1[1] != 0 :
-            sheet.write_merge(22, 22, 2, 2, '-'+str(absent1[1]), style2)
-            situationString += '缺席' +str(absent1[1])+'人 '
-        else :
-            sheet.write_merge(22, 22, 2, 2, '', style2)
-        if score1[1] != 0:
-            sheet.write_merge(22, 22, 3, 3, '-' + str(score1[1]), style2)
-        else :
-            sheet.write_merge(22, 22, 3, 3, '', style2)
-        if leave1[1] != 0 :
-            situationString += '请假'+str(leave1[1])+'人 '
-        if temporary1[1] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
-        if event1[1] != 0 :
-            situationString += event1[1]
-        if situationString != '':
-            sheet.write_merge(22, 22, 4 ,4 ,situationString,style2)
-        else :
-            sheet.write_merge(22, 22, 4, 4, '', style2)
+        sheet.write_merge(21, 21, 0, 0, '初二（1）', style2)
+        if (absent1[1][1] + score1[1][1] != 0):
+            sheet.write_merge(21, 21, 1, 1, '-' + str(absent1[1][1] + score1[1][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 1, 1, '', style2)
+        if (absent1[2][1] + score1[2][1] != 0):
+            sheet.write_merge(21, 21, 2, 2, '-' + str(absent1[2][1] + score1[2][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 2, 2, '', style2)
+        if (absent1[3][1] + score1[3][1] != 0):
+            sheet.write_merge(21, 21, 3, 3, '-' + str(absent1[3][1] + score1[3][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 3, 3, '', style2)
+        if (absent1[4][1] + score1[4][1] != 0):
+            sheet.write_merge(21, 21, 4, 4, '-' + str(absent1[4][1] + score1[4][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 4, 4, '', style2)
+        if (absent1[5][1] + score1[5][1] != 0):
+            sheet.write_merge(21, 21, 5, 5, '-' + str(absent1[5][1] + score1[5][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 5, 5, '', style2)
+        if (absent1[6][1] + score1[6][1] != 0):
+            sheet.write_merge(21, 21, 6, 6, '-' + str(absent1[6][1] + score1[6][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 6, 6, '', style2)
+        if (absent1[7][1] + score1[7][1] != 0):
+            sheet.write_merge(21, 21, 7, 7, '-' + str(absent1[7][1] + score1[7][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 7, 7, '', style2)
 
-        sheet.write_merge(23, 23, 0, 0, '初二（2）', style2)
-        sheet.write_merge(23, 23, 1, 1, str(fact1[2])+' / '+str(ought1[2]), style2)
-        situationString = ''
-        if absent1[2] != 0 :
-            sheet.write_merge(23, 23, 2, 2, '-'+str(absent1[2]), style2)
-            situationString += '缺席' +str(absent1[2])+'人 '
-        else :
-            sheet.write_merge(23, 23, 2, 2, '', style2)
-        if score1[2] != 0:
-            sheet.write_merge(23, 23, 3, 3, '-' + str(score1[2]), style2)
-        else :
-            sheet.write_merge(23, 23, 3, 3, '', style2)
-        if leave1[2] != 0 :
-            situationString += '请假'+str(leave1[2])+'人 '
-        if temporary1[2] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
-        if event1[2] != 0 :
-            situationString += event1[2]
-        if situationString != '':
-            sheet.write_merge(23, 23, 4 ,4 ,situationString,style2)
-        else :
-            sheet.write_merge(23, 23, 4, 4, '', style2)
+        sheet.write_merge(22, 22, 0, 0, '初二（2）', style2)
+        if (absent1[1][2] + score1[1][2] != 0):
+            sheet.write_merge(22, 22, 1, 1, '-' + str(absent1[1][2] + score1[1][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 1, 1, '', style2)
+        if (absent1[2][2] + score1[2][2] != 0):
+            sheet.write_merge(22, 22, 2, 2, '-' + str(absent1[2][2] + score1[2][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 2, 2, '', style2)
+        if (absent1[3][2] + score1[3][2] != 0):
+            sheet.write_merge(22, 22, 3, 3, '-' + str(absent1[3][2] + score1[3][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 3, 3, '', style2)
+        if (absent1[4][2] + score1[4][2] != 0):
+            sheet.write_merge(22, 22, 4, 4, '-' + str(absent1[4][2] + score1[4][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 4, 4, '', style2)
+        if (absent1[5][2] + score1[5][2] != 0):
+            sheet.write_merge(22, 22, 5, 5, '-' + str(absent1[5][2] + score1[5][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 5, 5, '', style2)
+        if (absent1[6][2] + score1[6][2] != 0):
+            sheet.write_merge(22, 22, 6, 6, '-' + str(absent1[6][2] + score1[6][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 6, 6, '', style2)
+        if (absent1[7][2] + score1[7][2] != 0):
+            sheet.write_merge(22, 22, 7, 7, '-' + str(absent1[7][2] + score1[7][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 7, 7, '', style2)
+
     elif grade == SENIOR_3:
         # 抓取初三应到实到数据
         ClassData = leancloud.Object.extend('ClassData')
@@ -221,21 +250,26 @@ def MakeExcel(grade):
         gradeQuery.equal_to('grade', JUNIOR_3)
         query_list = gradeQuery.find()
         # 处理应到实到数据
-        ought1 = [0, 0, 0]
-        fact1 = [0, 0, 0]
-        leave1 = [0, 0, 0]
-        temporary1 = [0, 0, 0]
-        absent1 = [0, 0, 0]
+        absent1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        isFirstResult = True
+        lastDayOfWeek = 1
         for result in query_list:
-            if result.get('isDownloaded') == 1:
+            if result.get('isWeeklyDownloaded') == False:
+                dayOfWeek = result.get('dayOfWeek')
+                if ((dayOfWeek - lastDayOfWeek) > 1):  # 如果时间间隔大于1天，则说明已经是下一周
+                    if (not isFirstResult):
+                        break
+                elif ((dayOfWeek - lastDayOfWeek) < 0):  # 如果有时间间隔小于0的情况，则必定是从周日到周一，否则就是下一周了
+                    if (dayOfWeek != 1 or lastDayOfWeek != 7):
+                        break
                 classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
+                absent1[dayOfWeek][classroom] = result.get('absent')
+                lastDayOfWeek = dayOfWeek
+                endDate = str(result.get('createdAt'))[0:10]
+                if isFirstResult:
+                    isFirstResult = False
+                    beginDate = str(result.get('createdAt'))
+                # result.set('isWeeklyDownloaded',True)
                 # result.save();
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
@@ -243,61 +277,85 @@ def MakeExcel(grade):
         situationQuery.equal_to('grade', JUNIOR_3)
         query_list2 = situationQuery.find()
         # 处理扣分数据
-        event1 = ["", "", ""]
-        score1 = [0, 0, 0]
+        score1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        isFirstResult1 = True
+        lastDayOfWeek = 1
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
+            if result.get('isWeeklyDownloaded') == False:
+                dayOfWeek = result.get('dayOfWeek')
+                if ((dayOfWeek - lastDayOfWeek) > 1):  # 如果时间间隔大于1天，则说明已经是下一周
+                    if (not isFirstResult1):
+                        break
+                elif ((dayOfWeek - lastDayOfWeek) < 0):  # 如果有时间间隔小于0的情况，则必定是从周日到周一，否则就是下一周了
+                    if (dayOfWeek != 1 or lastDayOfWeek != 7):
+                        break
                 classroom = result.get('classroom')
-                event1[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
-                score1[classroom] = score[classroom] + result.get('score')
-                # result.set('isDownloaded',2)
+                score1[dayOfWeek][classroom] += result.get('score')
+                print(score1[dayOfWeek][classroom])
+                lastDayOfWeek = dayOfWeek
+                isFirstResult1 = False
+                # result.set('isWeeklyDownloaded',True)
                 # result.save();
-        # 写入表格
-        sheet.write_merge(22, 22, 0, 0, '初三（1）', style2)
-        sheet.write_merge(22, 22, 1, 1, str(fact1[1]) + ' / ' + str(ought1[1]), style2)
-        situationString = ''
-        if absent1[1] != 0:
-            sheet.write_merge(22, 22, 2, 2, '-' + str(absent1[1]), style2)
-            situationString += '缺席' +str(absent1[1])+'人 '
+        #写入表格
+        sheet.write_merge(21, 21, 0, 0, '初三（1）', style2)
+        if (absent1[1][1] + score1[1][1] != 0):
+            sheet.write_merge(21, 21, 1, 1, '-' + str(absent1[1][1] + score1[1][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 1, 1, '', style2)
+        if (absent1[2][1] + score1[2][1] != 0):
+            sheet.write_merge(21, 21, 2, 2, '-' + str(absent1[2][1] + score1[2][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 2, 2, '', style2)
+        if (absent1[3][1] + score1[3][1] != 0):
+            sheet.write_merge(21, 21, 3, 3, '-' + str(absent1[3][1] + score1[3][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 3, 3, '', style2)
+        if (absent1[4][1] + score1[4][1] != 0):
+            sheet.write_merge(21, 21, 4, 4, '-' + str(absent1[4][1] + score1[4][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 4, 4, '', style2)
+        if (absent1[5][1] + score1[5][1] != 0):
+            sheet.write_merge(21, 21, 5, 5, '-' + str(absent1[5][1] + score1[5][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 5, 5, '', style2)
+        if (absent1[6][1] + score1[6][1] != 0):
+            sheet.write_merge(21, 21, 6, 6, '-' + str(absent1[6][1] + score1[6][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 6, 6, '', style2)
+        if (absent1[7][1] + score1[7][1] != 0):
+            sheet.write_merge(21, 21, 7, 7, '-' + str(absent1[7][1] + score1[7][1]), style2)
+        else:
+            sheet.write_merge(21, 21, 7, 7, '', style2)
+
+        sheet.write_merge(22, 22, 0, 0, '初三（2）', style2)
+        if (absent1[1][2] + score1[1][2] != 0):
+            sheet.write_merge(22, 22, 1, 1, '-' + str(absent1[1][2] + score1[1][2]), style2)
+        else:
+            sheet.write_merge(22, 22, 1, 1, '', style2)
+        if (absent1[2][2] + score1[2][2] != 0):
+            sheet.write_merge(22, 22, 2, 2, '-' + str(absent1[2][2] + score1[2][2]), style2)
         else:
             sheet.write_merge(22, 22, 2, 2, '', style2)
-        if score1[1] != 0:
-            sheet.write_merge(22, 22, 3, 3, '-' + str(score1[1]), style2)
+        if (absent1[3][2] + score1[3][2] != 0):
+            sheet.write_merge(22, 22, 3, 3, '-' + str(absent1[3][2] + score1[3][2]), style2)
         else:
             sheet.write_merge(22, 22, 3, 3, '', style2)
-        if leave1[1] != 0:
-            situationString += '请假' + str(leave1[1]) + '人 '
-        if temporary1[1] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
-        if event1[1] != 0:
-            situationString += event1[1]
-        if situationString != '':
-            sheet.write_merge(22, 22, 4, 4, situationString, style2)
+        if (absent1[4][2] + score1[4][2] != 0):
+            sheet.write_merge(22, 22, 4, 4, '-' + str(absent1[4][2] + score1[4][2]), style2)
         else:
             sheet.write_merge(22, 22, 4, 4, '', style2)
-
-        situationString = ''
-        sheet.write_merge(23, 23, 0, 0, '初三（2）', style2)
-        sheet.write_merge(23, 23, 1, 1, str(fact1[2]) + ' / ' + str(ought1[2]), style2)
-        if absent1[2] != 0:
-            sheet.write_merge(23, 23, 2, 2, '-' + str(absent1[2]), style2)
-            situationString += '缺席' +str(absent1[2])+'人 '
+        if (absent1[5][2] + score1[5][2] != 0):
+            sheet.write_merge(22, 22, 5, 5, '-' + str(absent1[5][2] + score1[5][2]), style2)
         else:
-            sheet.write_merge(23, 23, 2, 2, '', style2)
-        if score1[2] != 0:
-            sheet.write_merge(23, 23, 3, 3, '-' + str(score1[2]), style2)
+            sheet.write_merge(22, 22, 5, 5, '', style2)
+        if (absent1[6][2] + score1[6][2] != 0):
+            sheet.write_merge(22, 22, 6, 6, '-' + str(absent1[6][2] + score1[6][2]), style2)
         else:
-            sheet.write_merge(23, 23, 3, 3, '', style2)
-        if leave1[2] != 0:
-            situationString += '请假' + str(leave1[2]) + '人 '
-        if temporary1[2] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
-        if event1[2] != 0:
-            situationString += event1[2]
-        if situationString != '':
-            sheet.write_merge(23, 23, 4, 4, situationString, style2)
+            sheet.write_merge(22, 22, 6, 6, '', style2)
+        if (absent1[7][2] + score1[7][2] != 0):
+            sheet.write_merge(22, 22, 7, 7, '-' + str(absent1[7][2] + score1[7][2]), style2)
         else:
-            sheet.write_merge(23, 23, 4, 4, '', style2)
+            sheet.write_merge(22, 22, 7, 7, '', style2)
 
     path = GetDesktopPath()
     excel.save(path+"\\"+beginDate[5:10]+' ~ '+endDate[5:10]+gradeString+"午休晚修情况汇总表.xls")
@@ -317,6 +375,7 @@ def getGrade():
     return grade
 
 #主程序
+print("获取周汇总表...")
 initLeanCloud()
 grade = getGrade()
 
@@ -324,13 +383,19 @@ grade = getGrade()
 ClassData = leancloud.Object.extend('ClassData')
 gradeQuery = ClassData.query
 gradeQuery.equal_to('grade',int(grade))
-query_list = gradeQuery.find()
+isDownloadedQuery = ClassData.query
+isDownloadedQuery.does_not_exist("isWeeklyDownloaded")
+query = leancloud.Query.and_(gradeQuery,isDownloadedQuery)
+query_list = query.find()
 
 # 抓取扣分数据
 SituationData = leancloud.Object.extend('SituationData')
 situationQuery = SituationData.query
 situationQuery.equal_to('grade',int(grade))
-query_list2 = situationQuery.find()
+isDownloadedQuery = SituationData.query
+isDownloadedQuery.does_not_exist("isWeeklyDownloaded")
+query = leancloud.Query.and_(situationQuery,isDownloadedQuery)
+query_list2 = query.find()
 
 # 处理数据·处理应到实到数据
 absent = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -354,12 +419,9 @@ for result in query_list:
                 break
         classroom = result.get('classroom')
         absent[dayOfWeek][classroom] = result.get('absent')
-        query_list.remove(result)
         print(absent[dayOfWeek][classroom])
         lastDayOfWeek = dayOfWeek
         endDate = str(result.get('createdAt'))[0:10]
-        print(dayOfWeek,lastDayOfWeek)
-        print(isFirstResult)
         if isFirstResult :
             isFirstResult = False
             beginDate = str(result.get('createdAt'))
@@ -389,7 +451,6 @@ for result in query_list2:
                 break
         classroom = result.get('classroom')
         score[dayOfWeek][classroom] += result.get('score')
-        query_list.remove(result)
         print(score[dayOfWeek][classroom])
         lastDayOfWeek = dayOfWeek
         isFirstResult1 = False
@@ -397,7 +458,7 @@ for result in query_list2:
         #result.save();
 
 if isFirstResult == False :
-    MakeExcel(int(grade))
+    MakeExcel(int(grade),absent,score,beginDate,endDate)
     import tkinter.messagebox
     tkinter.messagebox.showinfo("智慧纪检", "成功！请到桌面查看")
 else :

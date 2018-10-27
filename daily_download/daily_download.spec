@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['E:\\SmartMonitor for Windows\\python_files\\daily_download.py'],
-             pathex=['E:\\SmartMonitor for Windows\\python_files'],
+a = Analysis(['E:\\SmartMonitor for Windows\\daily_download\\daily_download.py'],
+             pathex=['E:\\SmartMonitor for Windows\\daily_download'],
              binaries=[],
              datas=[],
              hiddenimports=[],

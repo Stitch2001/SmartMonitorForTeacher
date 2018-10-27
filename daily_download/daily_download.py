@@ -14,7 +14,7 @@ import leancloud
 def initLeanCloud():
     leancloud.init("kJ4C4D7mWjjAD2X5G3JpPe81-gzGzoHsz", "MwsllyERC65LKHtrq2qE2ifL")
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
 
 # 生成表格
 import xlwt
@@ -325,18 +325,27 @@ def GetGradeAndPattern():
 #主程序
 initLeanCloud()
 [grade,pat] = GetGradeAndPattern()
+if int(pat) == 0: patString = "午休"
+else: patString = "晚修"
+print("获取"+patString+"检查表...")
 
 # 抓取应到实到数据
 ClassData = leancloud.Object.extend('ClassData')
 gradeQuery = ClassData.query
+isDownloadedQuery = ClassData.query
 gradeQuery.equal_to('grade',int(grade))
-query_list = gradeQuery.find()
+isDownloadedQuery.does_not_exist("isDailyDownloaded")
+query = leancloud.Query.and_(gradeQuery,isDownloadedQuery)
+query_list = query.find()
 
 # 抓取扣分数据
 SituationData = leancloud.Object.extend('SituationData')
 situationQuery = SituationData.query
+isDownloadedQuery = SituationData.query
 situationQuery.equal_to('grade',int(grade))
-query_list2 = situationQuery.find()
+isDownloadedQuery.does_not_exist("isDailyDownloaded")
+query2 = leancloud.Query.and_(situationQuery,isDownloadedQuery)
+query_list2 = query2.find()
 
 # 处理数据·处理应到实到数据
 ought = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -347,45 +356,49 @@ absent = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 isFirstResult = True
 time = ''
 for result in query_list:
-    print(result.get('isDailyDownloaded'))
-    if result.get('isDailyDownloaded') == False:
-        pattern = result.get('pattern')
-        checker = result.get('checker')
-        dayOfWeek1 = result.get('dayOfWeek')
-        if dayOfWeek1 == 1 : dayOfWeek = "一"
-        elif dayOfWeek1 == 2 : dayOfWeek = "二"
-        elif dayOfWeek1 == 3 : dayOfWeek = "三"
-        elif dayOfWeek1 == 4 : dayOfWeek = "四"
-        elif dayOfWeek1 == 5 : dayOfWeek = "五"
-        elif dayOfWeek1 == 6 : dayOfWeek = "六"
-        elif dayOfWeek1 == 7 : dayOfWeek = "日"
-        checkTime = str(result.get('createdAt'))
-        if ((checkTime[0:10] != time[0:10]) or (int(pattern) != int(pat))) and (not isFirstResult) :
-            continue
-        classroom = result.get('classroom')
-        ought[classroom] = result.get('ought')
-        fact[classroom] = result.get('fact')
-        leave[classroom] = result.get('leave')
-        temporary[classroom] = result.get('temporary')
-        absent[classroom] = result.get('absent')
-        print(ought[classroom],fact[classroom],temporary[classroom],absent[classroom])
-        time = checkTime
-        isFirstResult = False
-        print(checkTime[0:10],time[0:10],pattern,pat)
-        #result.set('isDailyDownloaded',True)
-        #result.save();
+    pattern = result.get('pattern')
+    checker = result.get('checker')
+    dayOfWeek1 = result.get('dayOfWeek')
+    if dayOfWeek1 == 1:
+        dayOfWeek = "一"
+    elif dayOfWeek1 == 2:
+        dayOfWeek = "二"
+    elif dayOfWeek1 == 3:
+        dayOfWeek = "三"
+    elif dayOfWeek1 == 4:
+        dayOfWeek = "四"
+    elif dayOfWeek1 == 5:
+        dayOfWeek = "五"
+    elif dayOfWeek1 == 6:
+        dayOfWeek = "六"
+    elif dayOfWeek1 == 7:
+        dayOfWeek = "日"
+    checkTime = str(result.get('createdAt'))
+    if ((checkTime[0:10] != time[0:10]) or (int(pattern) != int(pat))) and (not isFirstResult):
+        continue
+    classroom = result.get('classroom')
+    ought[classroom] = result.get('ought')
+    fact[classroom] = result.get('fact')
+    leave[classroom] = result.get('leave')
+    temporary[classroom] = result.get('temporary')
+    absent[classroom] = result.get('absent')
+    print(ought[classroom], fact[classroom], temporary[classroom], absent[classroom])
+    time = checkTime
+    isFirstResult = False
+    # result.set('isDailyDownloaded',True)
+    # result.save();
 
 # 处理数据·处理扣分数据
 event = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 score = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 for result in query_list2:
-    if result.get('isDailyDownloaded') == False:
-        classroom = result.get('classroom')
-        event[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
-        score[classroom] = score[classroom]+result.get('score')
-        if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): continue
-        #result.set('isDailyDownloaded',True)
-        #result.save();
+    classroom = result.get('classroom')
+    event[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[
+                                                                                               11:-3] + ')'
+    score[classroom] = score[classroom] + result.get('score')
+    if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): continue
+    # result.set('isDailyDownloaded',True)
+    # result.save();
 
 if isFirstResult == False :
     MakeExcel(int(grade))

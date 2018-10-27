@@ -1,7 +1,7 @@
 object Form2: TForm2
-  Left = 313
+  Left = 289
   Height = 97
-  Top = 232
+  Top = 222
   Width = 211
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -12273,7 +12273,7 @@ object Form2: TForm2
     TabOrder = 2
     Text = '1'
   end
-  object year2: TComboBox
+  object day: TComboBox
     Left = 144
     Height = 25
     Top = 16

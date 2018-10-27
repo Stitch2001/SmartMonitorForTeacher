@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls;
+  StdCtrls, Windows;
 
 type
 
@@ -19,7 +19,7 @@ type
     Label3: TLabel;
     year: TComboBox;
     month: TComboBox;
-    year2: TComboBox;
+    day: TComboBox;
     procedure Button1Click(Sender: TObject);
   private
 
@@ -34,6 +34,7 @@ const
 
 var
   Form2: TForm2;
+  yearString,monthString,dayString: String;
 
 implementation
 
@@ -43,6 +44,13 @@ implementation
 
 procedure TForm2.Button1Click(Sender: TObject);
 begin
+  yearString := PChar(year.Text);
+  monthString := PChar(month.Text);
+  dayString := PChar(day.Text);
+  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade 0 --Pattern 0 --Year '
+    +yearString+' --Month '+monthString+' --Day '+dayString),'',SW_SHOW);
+  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade 0 --Pattern 1 --Year '
+    +yearString+' --Month '+monthString+' --Day '+dayString),'',SW_SHOW);
   form2.Close;
 end;
 
