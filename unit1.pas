@@ -54,12 +54,12 @@ end;
 procedure TForm1.createTimerTaskClick(Sender: TObject);
 begin
   ShowMessage('Win7以上系统请以管理员模式运行本软件，否则此操作无效');
-  ShellExecute(0,'open','cmd.exe',
+  ShellExecute(0,'open','cmd.exe',PChar(
     '/c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v AUTORUN /t ' +
-    'REG_SZ /d "daily_download.exe --Grade 0 --Pattern 0" /f','',SW_SHOW);
-  ShellExecute(0,'open','cmd.exe',
-    '/c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v AUTORUN /t ' +
-    'REG_SZ /d "daily_download.exe --Grade 0 --Pattern 1" /f','',SW_SHOW);
+    'REG_SZ /d "'+GetCurrentDir+'\daily_download.exe --Grade 0 --Pattern 0" /f'),'',SW_SHOW);
+  ShellExecute(0,'open','cmd.exe',PChar(
+    '/c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v AUTORUN1 /t ' +
+    'REG_SZ /d "'+GetCurrentDir+'\daily_download1.exe --Grade 0 --Pattern 1" /f'),'',SW_SHOW);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
