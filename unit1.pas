@@ -19,7 +19,6 @@ type
     About: TButton;
     getWeeklyExcel: TButton;
     procedure AboutClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure createTimerTaskClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure getExcelByDateClick(Sender: TObject);
@@ -31,7 +30,8 @@ type
 
   end;
 
-
+const
+  GRADE = '2';
 var
   Form1: TForm1;
 
@@ -40,11 +40,6 @@ implementation
 {$R *.lfm}
 
 { TForm1 }
-
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-
-end;
 
 procedure TForm1.AboutClick(Sender: TObject);
 begin
@@ -56,15 +51,17 @@ begin
   ShowMessage('Win7以上系统请以管理员模式运行本软件，否则此操作无效');
   ShellExecute(0,'open','cmd.exe',PChar(
     '/c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v AUTORUN /t ' +
-    'REG_SZ /d "'+GetCurrentDir+'\daily_download.exe --Grade 0 --Pattern 0" /f'),'',SW_SHOW);
+    'REG_SZ /d "'+GetCurrentDir+'\daily_download.exe --Grade '+
+    GRADE+' --Pattern 0" /f'),'',SW_SHOW);
   ShellExecute(0,'open','cmd.exe',PChar(
     '/c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v AUTORUN1 /t ' +
-    'REG_SZ /d "'+GetCurrentDir+'\daily_download1.exe --Grade 0 --Pattern 1" /f'),'',SW_SHOW);
+    'REG_SZ /d "'+GetCurrentDir+'\daily_download.exe --Grade '+
+    GRADE+' --Pattern 1" /f'),'',SW_SHOW);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  ShellExecute(0,'open','check_updates1.exe','','',SW_SHOW);
+  ShellExecute(0,'open','check_updates'+GRADE+'.exe','','',SW_SHOW);
 end;
 
 procedure TForm1.getExcelByDateClick(Sender: TObject);
@@ -74,13 +71,15 @@ end;
 
 procedure TForm1.getWeeklyExcelClick(Sender: TObject);
 begin
-  ShellExecute(0,'open','weekly_download.exe','--Grade 0','',SW_SHOW);
+  ShellExecute(0,'open','weekly_download.exe','--Grade '+GRADE,'',SW_SHOW);
 end;
 
 procedure TForm1.getDailyExcelClick(Sender: TObject);
 begin
-  ShellExecute(0,'open','daily_download.exe','--Grade 0 --Pattern 0','',SW_SHOW);
-  ShellExecute(0,'open','daily_download.exe','--Grade 0 --Pattern 1','',SW_SHOW);
+  ShellExecute(0,'open','daily_download.exe','--Grade '+
+  GRADE+' --Pattern 0','',SW_SHOW);
+  ShellExecute(0,'open','daily_download.exe','--Grade '+
+  GRADE+' --Pattern 1','',SW_SHOW);
 end;
 
 end.

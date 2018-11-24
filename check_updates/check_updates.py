@@ -1,4 +1,4 @@
-# 初始化LeanCloud
+﻿# 初始化LeanCloud
 import leancloud
 def initLeanCloud():
     leancloud.init("kJ4C4D7mWjjAD2X5G3JpPe81-gzGzoHsz", "MwsllyERC65LKHtrq2qE2ifL")

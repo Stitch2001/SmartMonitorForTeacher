@@ -12243,6 +12243,7 @@ object Form2: TForm2
       '2030'
     )
     MaxLength = 4
+    Style = csDropDownList
     TabOrder = 1
     Text = '2018'
   end
@@ -12256,22 +12257,23 @@ object Form2: TForm2
     ItemHeight = 17
     ItemIndex = 0
     Items.Strings = (
-      '1'
-      '2'
-      '3'
-      '4'
-      '5'
-      '6'
-      '7'
-      '8'
-      '9'
+      '01'
+      '02'
+      '03'
+      '04'
+      '05'
+      '06'
+      '07'
+      '08'
+      '09'
       '10'
       '11'
       '12'
     )
     MaxLength = 2
+    Style = csDropDownList
     TabOrder = 2
-    Text = '1'
+    Text = '01'
   end
   object day: TComboBox
     Left = 144
@@ -12283,15 +12285,15 @@ object Form2: TForm2
     ItemHeight = 17
     ItemIndex = 0
     Items.Strings = (
-      '1'
-      '2'
-      '3'
-      '4'
-      '5'
-      '6'
-      '7'
-      '8'
-      '9'
+      '01'
+      '02'
+      '03'
+      '04'
+      '05'
+      '06'
+      '07'
+      '08'
+      '09'
       '10'
       '11'
       '12'
@@ -12316,8 +12318,9 @@ object Form2: TForm2
       '31'
     )
     MaxLength = 2
+    Style = csDropDownList
     TabOrder = 3
-    Text = '1'
+    Text = '01'
   end
   object Label1: TLabel
     Left = 72

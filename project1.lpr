@@ -13,7 +13,7 @@ uses
 {$R *.res}
 
 begin
-  Application.Title:='智慧纪检 - 高一专版';
+  Application.Title:='智慧纪检';
   RequireDerivedFormResource:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);

@@ -27,11 +27,6 @@ def MakeExcel(grade):
     else :
         gradeString = '高三'
 
-    if pattern == PATTERN_NOON :
-        patternString = '午休'
-    else :
-        patternString = '晚修'
-
     excel = xlwt.Workbook(encoding='Utf-8')
     sheet = excel.add_sheet('sheet1')
 
@@ -68,7 +63,7 @@ def MakeExcel(grade):
     alignment.vert = alignment.VERT_CENTER
     style.font = titleFont
     style.alignment = alignment
-    sheet.write_merge(0, 0, 0, 4, gradeString+'课室'+patternString+'情况登记表', style)
+    sheet.write_merge(0, 0, 0, 4, gradeString+'课室'+patString+'情况登记表', style)
 
     #表头部分
     font = xlwt.Font()
@@ -76,7 +71,7 @@ def MakeExcel(grade):
     font.bold = False
     font.name = '宋体'
     style.font = font
-    sheet.write_merge(1, 1, 0, 3, '检查时间：'+str(checkTime)[0:10]+' 星期'+dayOfWeek, style)
+    sheet.write_merge(1, 1, 0, 3, '检查时间：'+str(time)[0:10]+' 星期'+dayOfWeek, style)
     sheet.write_merge(1, 1, 4, 4, ' 检查人：'+checker, style)
 
     #表头2部分
@@ -94,7 +89,7 @@ def MakeExcel(grade):
     style2.alignment = alignment
     style2.borders = border
     sheet.write_merge(2, 3, 0, 0, '班级', style2)
-    sheet.write_merge(2, 3, 1, 1, patternString+'人数', style2)
+    sheet.write_merge(2, 3, 1, 1, patString+'人数', style2)
     sheet.write_merge(2, 2, 2, 3, '检查内容', style2)
     sheet.write_merge(3, 3, 2, 2, '到位（4）', style2)
     sheet.write_merge(3, 3, 3, 3, '纪律（6）', style2)
@@ -118,7 +113,7 @@ def MakeExcel(grade):
         if leave[j] != 0 :
             situationString += '请假'+str(leave[j])+'人 '
         if temporary[j] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event[j] != 0 :
             situationString += event[j]
         if situationString != '':
@@ -138,8 +133,13 @@ def MakeExcel(grade):
         # 抓取初二应到实到数据
         ClassData = leancloud.Object.extend('ClassData')
         gradeQuery = ClassData.query
+        isDownloadedQuery = ClassData.query
         gradeQuery.equal_to('grade', JUNIOR_2)
-        query_list = gradeQuery.find()
+        isDownloadedQuery.does_not_exist("isDailyDownloaded")
+        patternQuery = ClassData.query
+        patternQuery.equal_to('pattern',int(pat))
+        query = leancloud.Query.and_(gradeQuery, isDownloadedQuery, patternQuery)
+        query_list = query.find()
         # 处理应到实到数据
         ought1 = [0, 0, 0]
         fact1 = [0, 0, 0]
@@ -147,31 +147,35 @@ def MakeExcel(grade):
         temporary1 = [0, 0, 0]
         absent1 = [0, 0, 0]
         for result in query_list:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            ought1[classroom] = result.get('ought')
+            fact1[classroom] = result.get('fact')
+            leave1[classroom] = result.get('leave')
+            temporary1[classroom] = result.get('temporary')
+            absent1[classroom] = result.get('absent')
+            print(JUNIOR_2,classroom,ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
+            # result.set('isDailyDownloaded',True)
+            # result.save();
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
         situationQuery = SituationData.query
+        isDownloadedQuery = SituationData.query
         situationQuery.equal_to('grade', JUNIOR_2)
-        query_list2 = situationQuery.find()
+        patternQuery = SituationData.query
+        patternQuery.equal_to('pattern', int(pat))
+        isDownloadedQuery.equal_to("isDailyDownloaded",False)
+        query2 = leancloud.Query.and_(situationQuery, isDownloadedQuery, patternQuery)
+        query_list2 = query2.find()
         # 处理扣分数据
         event1 = ["", "", ""]
         score1 = [0, 0, 0]
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                event1[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
-                score1[classroom] = score[classroom]+result.get('score')
-                #result.set('isDownloaded',2)
-                #result.save();
+            classroom = result.get('classroom')
+            event1[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
+            score1[classroom] = score[classroom]+result.get('score')
+            print(event1[classroom])
+            #result.set('isDailyDownloaded',2)
+            #result.save();
         #写入表格
         sheet.write_merge(22, 22, 0, 0, '初二（1）', style2)
         sheet.write_merge(22, 22, 1, 1, str(fact1[1])+' / '+str(ought1[1]), style2)
@@ -188,7 +192,7 @@ def MakeExcel(grade):
         if leave1[1] != 0 :
             situationString += '请假'+str(leave1[1])+'人 '
         if temporary1[1] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[1] != 0 :
             situationString += event1[1]
         if situationString != '':
@@ -211,7 +215,7 @@ def MakeExcel(grade):
         if leave1[2] != 0 :
             situationString += '请假'+str(leave1[2])+'人 '
         if temporary1[2] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[2] != 0 :
             situationString += event1[2]
         if situationString != '':
@@ -222,8 +226,13 @@ def MakeExcel(grade):
         # 抓取初三应到实到数据
         ClassData = leancloud.Object.extend('ClassData')
         gradeQuery = ClassData.query
+        isDownloadedQuery = ClassData.query
         gradeQuery.equal_to('grade', JUNIOR_3)
-        query_list = gradeQuery.find()
+        isDownloadedQuery.does_not_exist("isDailyDownloaded")
+        patternQuery = ClassData.query
+        patternQuery.equal_to('pattern',int(pat))
+        query = leancloud.Query.and_(gradeQuery, isDownloadedQuery, patternQuery)
+        query_list = query.find()
         # 处理应到实到数据
         ought1 = [0, 0, 0]
         fact1 = [0, 0, 0]
@@ -231,31 +240,35 @@ def MakeExcel(grade):
         temporary1 = [0, 0, 0]
         absent1 = [0, 0, 0]
         for result in query_list:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            ought1[classroom] = result.get('ought')
+            fact1[classroom] = result.get('fact')
+            leave1[classroom] = result.get('leave')
+            temporary1[classroom] = result.get('temporary')
+            absent1[classroom] = result.get('absent')
+            print(JUNIOR_3,classroom,ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
+            # result.set('isDailyDownloaded',True)
+            # result.save();
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
         situationQuery = SituationData.query
-        situationQuery.equal_to('grade', JUNIOR_3)
-        query_list2 = situationQuery.find()
+        isDownloadedQuery = SituationData.query
+        situationQuery.equal_to('grade',JUNIOR_3)
+        patternQuery = SituationData.query
+        patternQuery.equal_to('pattern',int(pat))
+        isDownloadedQuery.equal_to("isDailyDownloaded",False)
+        query2 = leancloud.Query.and_(situationQuery,isDownloadedQuery,patternQuery)
+        query_list2 = query2.find()
         # 处理扣分数据
         event1 = ["", "", ""]
         score1 = [0, 0, 0]
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                event1[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
-                score1[classroom] = score[classroom] + result.get('score')
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            event1[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
+            score1[classroom] = score[classroom] + result.get('score')
+            print(event1[classroom])
+            # result.set('isDownloaded',2)
+            # result.save();
         # 写入表格
         sheet.write_merge(22, 22, 0, 0, '初三（1）', style2)
         sheet.write_merge(22, 22, 1, 1, str(fact1[1]) + ' / ' + str(ought1[1]), style2)
@@ -272,7 +285,7 @@ def MakeExcel(grade):
         if leave1[1] != 0:
             situationString += '请假' + str(leave1[1]) + '人 '
         if temporary1[1] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[1] != 0:
             situationString += event1[1]
         if situationString != '':
@@ -295,7 +308,7 @@ def MakeExcel(grade):
         if leave1[2] != 0:
             situationString += '请假' + str(leave1[2]) + '人 '
         if temporary1[2] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[2] != 0:
             situationString += event1[2]
         if situationString != '':
@@ -304,7 +317,7 @@ def MakeExcel(grade):
             sheet.write_merge(23, 23, 4, 4, '', style2)
 
     path = GetDesktopPath()
-    excel.save(path+"\\"+time[5:10]+gradeString+"课室午休情况登记表.xls")
+    excel.save(path+"\\"+time[5:10]+gradeString+"课室"+patString+"情况登记表.xls")
 
 # 获取桌面路径
 import os
@@ -334,8 +347,10 @@ ClassData = leancloud.Object.extend('ClassData')
 gradeQuery = ClassData.query
 isDownloadedQuery = ClassData.query
 gradeQuery.equal_to('grade',int(grade))
+patternQuery = ClassData.query
+patternQuery.equal_to('pattern',int(pat))
 isDownloadedQuery.does_not_exist("isDailyDownloaded")
-query = leancloud.Query.and_(gradeQuery,isDownloadedQuery)
+query = leancloud.Query.and_(gradeQuery,patternQuery,isDownloadedQuery)
 query_list = query.find()
 
 # 抓取扣分数据
@@ -343,9 +358,12 @@ SituationData = leancloud.Object.extend('SituationData')
 situationQuery = SituationData.query
 isDownloadedQuery = SituationData.query
 situationQuery.equal_to('grade',int(grade))
-isDownloadedQuery.does_not_exist("isDailyDownloaded")
-query2 = leancloud.Query.and_(situationQuery,isDownloadedQuery)
-query_list2 = query2.find()
+patternQuery = SituationData.query
+patternQuery.equal_to('pattern',int(pat))
+isDownloadedQuery.equal_to("isDailyDownloaded",False)
+query2 = leancloud.Query.and_(situationQuery,patternQuery,isDownloadedQuery)
+query_list2 = isDownloadedQuery.find()
+print (query_list2)
 
 # 处理数据·处理应到实到数据
 ought = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -360,21 +378,22 @@ for result in query_list:
     checker = result.get('checker')
     dayOfWeek1 = result.get('dayOfWeek')
     if dayOfWeek1 == 1:
-        dayOfWeek = "一"
-    elif dayOfWeek1 == 2:
-        dayOfWeek = "二"
-    elif dayOfWeek1 == 3:
-        dayOfWeek = "三"
-    elif dayOfWeek1 == 4:
-        dayOfWeek = "四"
-    elif dayOfWeek1 == 5:
-        dayOfWeek = "五"
-    elif dayOfWeek1 == 6:
-        dayOfWeek = "六"
-    elif dayOfWeek1 == 7:
         dayOfWeek = "日"
-    checkTime = str(result.get('createdAt'))
-    if ((checkTime[0:10] != time[0:10]) or (int(pattern) != int(pat))) and (not isFirstResult):
+    elif dayOfWeek1 == 2:
+        dayOfWeek = "一"
+    elif dayOfWeek1 == 3:
+        dayOfWeek = "二"
+    elif dayOfWeek1 == 4:
+        dayOfWeek = "三"
+    elif dayOfWeek1 == 5:
+        dayOfWeek = "四"
+    elif dayOfWeek1 == 6:
+        dayOfWeek = "五"
+    elif dayOfWeek1 == 7:
+        dayOfWeek = "六"
+
+    checkTime = str(result.get('date'))
+    if (checkTime[0:10] != time[0:10]) and (not isFirstResult):
         continue
     classroom = result.get('classroom')
     ought[classroom] = result.get('ought')
@@ -382,7 +401,7 @@ for result in query_list:
     leave[classroom] = result.get('leave')
     temporary[classroom] = result.get('temporary')
     absent[classroom] = result.get('absent')
-    print(ought[classroom], fact[classroom], temporary[classroom], absent[classroom])
+    print(grade,classroom,ought[classroom], fact[classroom], temporary[classroom], absent[classroom])
     time = checkTime
     isFirstResult = False
     # result.set('isDailyDownloaded',True)
@@ -393,10 +412,10 @@ event = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 score = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 for result in query_list2:
     classroom = result.get('classroom')
-    event[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[
-                                                                                               11:-3] + ')'
+    event[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
     score[classroom] = score[classroom] + result.get('score')
-    if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): continue
+    if (checkTime[0:10] != time[0:10]): continue
+    print(event[classroom])
     # result.set('isDailyDownloaded',True)
     # result.save();
 

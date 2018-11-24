@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 145
+  Left = 346
   Height = 265
-  Top = 120
+  Top = 190
   Width = 289
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = '智慧纪检 - 高一专版'
+  Caption = '智慧纪检 - 高二专版'
   ClientHeight = 265
   ClientWidth = 289
   Icon.Data = {

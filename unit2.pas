@@ -28,9 +28,7 @@ type
   end;
 
 const
-  SENIOR_1 = 0;
-  SENIOR_2 = 1;
-  SENIOR_3 = 2;
+  GRADE = '2';
 
 var
   Form2: TForm2;
@@ -47,10 +45,12 @@ begin
   yearString := PChar(year.Text);
   monthString := PChar(month.Text);
   dayString := PChar(day.Text);
-  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade 0 --Pattern 0 --Year '
-    +yearString+' --Month '+monthString+' --Day '+dayString),'',SW_SHOW);
-  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade 0 --Pattern 1 --Year '
-    +yearString+' --Month '+monthString+' --Day '+dayString),'',SW_SHOW);
+  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade '+
+  GRADE+' --Pattern 0 --Year '+yearString+' --Month '+
+  monthString+' --Day '+dayString),'',SW_SHOW);
+  ShellExecute(0,'open','download_with_date.exe',PChar('--Grade '+
+  GRADE+' --Pattern 1 --Year '+yearString+' --Month '+
+  monthString+' --Day '+dayString),'',SW_SHOW);
   form2.Close;
 end;
 

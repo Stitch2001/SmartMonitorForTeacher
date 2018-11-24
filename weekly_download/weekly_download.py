@@ -13,8 +13,8 @@ PATTERN_NIGHT = 1
 import leancloud
 def initLeanCloud():
     leancloud.init("kJ4C4D7mWjjAD2X5G3JpPe81-gzGzoHsz", "MwsllyERC65LKHtrq2qE2ifL")
-    import logging
-    #logging.basicConfig(level=logging.DEBUG)
+    # import logging
+    # logging.basicConfig(level=logging.DEBUG)
 
 # 生成表格
 import xlwt
@@ -60,7 +60,7 @@ def MakeExcel(grade,absent,score,beginDate,endDate):
     alignment.vert = alignment.VERT_CENTER
     style.font = titleFont
     style.alignment = alignment
-    sheet.write_merge(0, 0, 0, 7, gradeString+'午休晚修扣分情况汇总表', style)
+    sheet.write_merge(0, 0, 0, 8, gradeString+'午休晚修扣分情况汇总表', style)
 
     #表头部分
     font = xlwt.Font()
@@ -92,40 +92,52 @@ def MakeExcel(grade,absent,score,beginDate,endDate):
     sheet.write_merge(2, 2, 5, 5, '星期五', style2)
     sheet.write_merge(2, 2, 6, 6, '星期六', style2)
     sheet.write_merge(2, 2, 7, 7, '星期日', style2)
+    sheet.write_merge(2, 2, 8, 8, '合计', style2)
 
     #班级数据部分
     i = 3
     j = 1
     while j <= 18 :
+        countAll = 0;
         sheet.write_merge(i, i, 0, 0, gradeString+'（'+str(j)+'）', style2)
         if (absent[1][j]+score[1][j] != 0) :
             sheet.write_merge(i, i, 1, 1, '-'+str(absent[1][j]+score[1][j]), style2)
+            countAll += absent[1][j]+score[1][j]
         else : sheet.write_merge(i, i, 1, 1, '', style2)
         if (absent[2][j]+score[2][j] != 0) :
             sheet.write_merge(i, i, 2, 2, '-'+str(absent[2][j]+score[2][j]), style2)
+            countAll += absent[2][j]+score[2][j]
         else : sheet.write_merge(i, i, 2, 2, '', style2)
         if (absent[3][j]+score[3][j] != 0) :
             sheet.write_merge(i, i, 3, 3, '-'+str(absent[3][j]+score[3][j]), style2)
+            countAll += absent[3][j]+score[3][j]
         else : sheet.write_merge(i, i, 3, 3, '', style2)
         if (absent[4][j]+score[4][j] != 0) :
             sheet.write_merge(i, i, 4, 4, '-'+str(absent[4][j]+score[4][j]), style2)
+            countAll += absent[4][j]+score[4][j]
         else : sheet.write_merge(i, i, 4, 4, '', style2)
         if (absent[5][j]+score[5][j] != 0) :
             sheet.write_merge(i, i, 5, 5, '-'+str(absent[5][j]+score[5][j]), style2)
+            countAll += absent[5][j]+score[5][j]
         else : sheet.write_merge(i, i, 5, 5, '', style2)
         if (absent[6][j]+score[6][j] != 0) :
             sheet.write_merge(i, i, 6, 6, '-'+str(absent[6][j]+score[6][j]), style2)
+            countAll += absent[6][j]+score[6][j]
         else : sheet.write_merge(i, i, 6, 6, '', style2)
         if (absent[7][j]+score[7][j] != 0) :
             sheet.write_merge(i, i, 7, 7, '-'+str(absent[7][j]+score[7][j]), style2)
+            countAll += absent[7][j]+score[7][j]
         else : sheet.write_merge(i, i, 7, 7, '', style2)
+        if (countAll != 0) :
+            sheet.write_merge(i, i, 8, 8, '-'+str(countAll), style2)
+        else : sheet.write_merge(i, i, 8, 8, '', style2)
         i += 1
         j += 1
 
     #对三个年级的19/20号班级分类讨论
     if grade == SENIOR_1 :
         i = 0
-        while i <= 7 :
+        while i <= 8 :
             sheet.write_merge(21, 21, i, i, '', style2)
             sheet.write_merge(22, 22, i, i, '', style2)
             i += 1
@@ -184,64 +196,88 @@ def MakeExcel(grade,absent,score,beginDate,endDate):
                 # result.save();
         #写入表格
         sheet.write_merge(21, 21, 0, 0, '初二（1）', style2)
+        countAll = 0
         if (absent1[1][1] + score1[1][1] != 0):
             sheet.write_merge(21, 21, 1, 1, '-' + str(absent1[1][1] + score1[1][1]), style2)
+            countAll += absent[1][1]+score[1][1]
         else:
             sheet.write_merge(21, 21, 1, 1, '', style2)
         if (absent1[2][1] + score1[2][1] != 0):
             sheet.write_merge(21, 21, 2, 2, '-' + str(absent1[2][1] + score1[2][1]), style2)
+            countAll += absent[2][1]+score[2][1]
         else:
             sheet.write_merge(21, 21, 2, 2, '', style2)
         if (absent1[3][1] + score1[3][1] != 0):
             sheet.write_merge(21, 21, 3, 3, '-' + str(absent1[3][1] + score1[3][1]), style2)
+            countAll += absent[3][1]+score[3][1]
         else:
             sheet.write_merge(21, 21, 3, 3, '', style2)
         if (absent1[4][1] + score1[4][1] != 0):
             sheet.write_merge(21, 21, 4, 4, '-' + str(absent1[4][1] + score1[4][1]), style2)
+            countAll += absent[4][1]+score[4][1]
         else:
             sheet.write_merge(21, 21, 4, 4, '', style2)
         if (absent1[5][1] + score1[5][1] != 0):
             sheet.write_merge(21, 21, 5, 5, '-' + str(absent1[5][1] + score1[5][1]), style2)
+            countAll += absent[5][1]+score[5][1]
         else:
             sheet.write_merge(21, 21, 5, 5, '', style2)
         if (absent1[6][1] + score1[6][1] != 0):
             sheet.write_merge(21, 21, 6, 6, '-' + str(absent1[6][1] + score1[6][1]), style2)
+            countAll += absent[6][1]+score[6][1]
         else:
             sheet.write_merge(21, 21, 6, 6, '', style2)
         if (absent1[7][1] + score1[7][1] != 0):
             sheet.write_merge(21, 21, 7, 7, '-' + str(absent1[7][1] + score1[7][1]), style2)
+            countAll += absent[7][1]+score[7][1]
         else:
             sheet.write_merge(21, 21, 7, 7, '', style2)
+        if (countAll != 0):
+            sheet.write_merge(21, 21, 8, 8, '-' + str(countAll), style2)
+        else:
+            sheet.write_merge(21, 21, 8, 8, '', style2)
 
         sheet.write_merge(22, 22, 0, 0, '初二（2）', style2)
+        countAll = 0
         if (absent1[1][2] + score1[1][2] != 0):
             sheet.write_merge(22, 22, 1, 1, '-' + str(absent1[1][2] + score1[1][2]), style2)
+            countAll += absent[1][2]+score[1][2]
         else:
             sheet.write_merge(22, 22, 1, 1, '', style2)
         if (absent1[2][2] + score1[2][2] != 0):
             sheet.write_merge(22, 22, 2, 2, '-' + str(absent1[2][2] + score1[2][2]), style2)
+            countAll += absent[2][2]+score[2][2]
         else:
             sheet.write_merge(22, 22, 2, 2, '', style2)
         if (absent1[3][2] + score1[3][2] != 0):
             sheet.write_merge(22, 22, 3, 3, '-' + str(absent1[3][2] + score1[3][2]), style2)
+            countAll += absent[3][2]+score[3][2]
         else:
             sheet.write_merge(22, 22, 3, 3, '', style2)
         if (absent1[4][2] + score1[4][2] != 0):
             sheet.write_merge(22, 22, 4, 4, '-' + str(absent1[4][2] + score1[4][2]), style2)
+            countAll += absent[4][2]+score[4][2]
         else:
             sheet.write_merge(22, 22, 4, 4, '', style2)
         if (absent1[5][2] + score1[5][2] != 0):
             sheet.write_merge(22, 22, 5, 5, '-' + str(absent1[5][2] + score1[5][2]), style2)
+            countAll += absent[5][2]+score[5][2]
         else:
             sheet.write_merge(22, 22, 5, 5, '', style2)
         if (absent1[6][2] + score1[6][2] != 0):
             sheet.write_merge(22, 22, 6, 6, '-' + str(absent1[6][2] + score1[6][2]), style2)
+            countAll += absent[6][2]+score[6][2]
         else:
             sheet.write_merge(22, 22, 6, 6, '', style2)
         if (absent1[7][2] + score1[7][2] != 0):
             sheet.write_merge(22, 22, 7, 7, '-' + str(absent1[7][2] + score1[7][2]), style2)
+            countAll += absent[7][2]+score[7][2]
         else:
             sheet.write_merge(22, 22, 7, 7, '', style2)
+        if (countAll != 0):
+            sheet.write_merge(22, 22, 8, 8, '-' + str(countAll), style2)
+        else:
+            sheet.write_merge(22, 22, 8, 8, '', style2)
 
     elif grade == SENIOR_3:
         # 抓取初三应到实到数据
@@ -298,64 +334,88 @@ def MakeExcel(grade,absent,score,beginDate,endDate):
                 # result.save();
         #写入表格
         sheet.write_merge(21, 21, 0, 0, '初三（1）', style2)
+        countAll = 0
         if (absent1[1][1] + score1[1][1] != 0):
             sheet.write_merge(21, 21, 1, 1, '-' + str(absent1[1][1] + score1[1][1]), style2)
+            countAll += absent[1][1]+score[1][1]
         else:
             sheet.write_merge(21, 21, 1, 1, '', style2)
         if (absent1[2][1] + score1[2][1] != 0):
             sheet.write_merge(21, 21, 2, 2, '-' + str(absent1[2][1] + score1[2][1]), style2)
+            countAll += absent[2][1]+score[2][1]
         else:
             sheet.write_merge(21, 21, 2, 2, '', style2)
         if (absent1[3][1] + score1[3][1] != 0):
             sheet.write_merge(21, 21, 3, 3, '-' + str(absent1[3][1] + score1[3][1]), style2)
+            countAll += absent[3][1]+score[3][1]
         else:
             sheet.write_merge(21, 21, 3, 3, '', style2)
         if (absent1[4][1] + score1[4][1] != 0):
             sheet.write_merge(21, 21, 4, 4, '-' + str(absent1[4][1] + score1[4][1]), style2)
+            countAll += absent[4][1]+score[4][1]
         else:
             sheet.write_merge(21, 21, 4, 4, '', style2)
         if (absent1[5][1] + score1[5][1] != 0):
             sheet.write_merge(21, 21, 5, 5, '-' + str(absent1[5][1] + score1[5][1]), style2)
+            countAll += absent[5][1]+score[5][1]
         else:
             sheet.write_merge(21, 21, 5, 5, '', style2)
         if (absent1[6][1] + score1[6][1] != 0):
             sheet.write_merge(21, 21, 6, 6, '-' + str(absent1[6][1] + score1[6][1]), style2)
+            countAll += absent[6][1]+score[6][1]
         else:
             sheet.write_merge(21, 21, 6, 6, '', style2)
         if (absent1[7][1] + score1[7][1] != 0):
             sheet.write_merge(21, 21, 7, 7, '-' + str(absent1[7][1] + score1[7][1]), style2)
+            countAll += absent[7][1]+score[7][1]
         else:
             sheet.write_merge(21, 21, 7, 7, '', style2)
+        if (countAll != 0):
+            sheet.write_merge(21, 21, 8, 8, '-' + str(countAll), style2)
+        else:
+            sheet.write_merge(21, 21, 8, 8, '', style2)
 
         sheet.write_merge(22, 22, 0, 0, '初三（2）', style2)
+        countAll = 0
         if (absent1[1][2] + score1[1][2] != 0):
             sheet.write_merge(22, 22, 1, 1, '-' + str(absent1[1][2] + score1[1][2]), style2)
+            countAll += absent[1][2]+score[1][2]
         else:
             sheet.write_merge(22, 22, 1, 1, '', style2)
         if (absent1[2][2] + score1[2][2] != 0):
             sheet.write_merge(22, 22, 2, 2, '-' + str(absent1[2][2] + score1[2][2]), style2)
+            countAll += absent[2][2]+score[2][2]
         else:
             sheet.write_merge(22, 22, 2, 2, '', style2)
         if (absent1[3][2] + score1[3][2] != 0):
             sheet.write_merge(22, 22, 3, 3, '-' + str(absent1[3][2] + score1[3][2]), style2)
+            countAll += absent[3][2]+score[3][2]
         else:
             sheet.write_merge(22, 22, 3, 3, '', style2)
         if (absent1[4][2] + score1[4][2] != 0):
             sheet.write_merge(22, 22, 4, 4, '-' + str(absent1[4][2] + score1[4][2]), style2)
+            countAll += absent[4][2]+score[4][2]
         else:
             sheet.write_merge(22, 22, 4, 4, '', style2)
         if (absent1[5][2] + score1[5][2] != 0):
             sheet.write_merge(22, 22, 5, 5, '-' + str(absent1[5][2] + score1[5][2]), style2)
+            countAll += absent[5][2]+score[5][2]
         else:
             sheet.write_merge(22, 22, 5, 5, '', style2)
         if (absent1[6][2] + score1[6][2] != 0):
             sheet.write_merge(22, 22, 6, 6, '-' + str(absent1[6][2] + score1[6][2]), style2)
+            countAll += absent[6][2]+score[6][2]
         else:
             sheet.write_merge(22, 22, 6, 6, '', style2)
         if (absent1[7][2] + score1[7][2] != 0):
             sheet.write_merge(22, 22, 7, 7, '-' + str(absent1[7][2] + score1[7][2]), style2)
+            countAll += absent[7][2]+score[7][2]
         else:
             sheet.write_merge(22, 22, 7, 7, '', style2)
+        if (countAll != 0):
+            sheet.write_merge(22, 22, 8, 8, '-' + str(countAll), style2)
+        else:
+            sheet.write_merge(22, 22, 8, 8, '', style2)
 
     path = GetDesktopPath()
     excel.save(path+"\\"+beginDate[5:10]+' ~ '+endDate[5:10]+gradeString+"午休晚修情况汇总表.xls")
@@ -384,16 +444,17 @@ ClassData = leancloud.Object.extend('ClassData')
 gradeQuery = ClassData.query
 gradeQuery.equal_to('grade',int(grade))
 isDownloadedQuery = ClassData.query
-isDownloadedQuery.does_not_exist("isWeeklyDownloaded")
+isDownloadedQuery.equal_to('isWeeklyDownloaded',False)
 query = leancloud.Query.and_(gradeQuery,isDownloadedQuery)
 query_list = query.find()
+print(query_list)
 
 # 抓取扣分数据
 SituationData = leancloud.Object.extend('SituationData')
 situationQuery = SituationData.query
 situationQuery.equal_to('grade',int(grade))
 isDownloadedQuery = SituationData.query
-isDownloadedQuery.does_not_exist("isWeeklyDownloaded")
+isDownloadedQuery.equal_to('isWeeklyDownloaded',False)
 query = leancloud.Query.and_(situationQuery,isDownloadedQuery)
 query_list2 = query.find()
 

@@ -13,8 +13,8 @@ PATTERN_NIGHT = 1
 import leancloud
 def initLeanCloud():
     leancloud.init("kJ4C4D7mWjjAD2X5G3JpPe81-gzGzoHsz", "MwsllyERC65LKHtrq2qE2ifL")
-    import logging
-    #logging.basicConfig(level=logging.DEBUG)
+    # import logging
+    # logging.basicConfig(level=logging.DEBUG)
 
 # 生成表格
 import xlwt
@@ -27,21 +27,16 @@ def MakeExcel(grade):
     else :
         gradeString = '高三'
 
-    if pattern == PATTERN_NOON :
-        patternString = '午休'
-    else :
-        patternString = '晚修'
-
     excel = xlwt.Workbook(encoding='Utf-8')
     sheet = excel.add_sheet('sheet1')
 
-    #设置列宽
+    # 设置列宽
     sheet.col(0).width = 3048 # 1088（列宽）*2.8
     sheet.col(1).width = 2346
     sheet.col(2).width = 3010
     sheet.col(3).width = 3186
     sheet.col(4).width = 12250
-    #设置行高
+    # 设置行高
     height_style = xlwt.easyxf('font:height 480;')
     sheet.row(0).set_style(height_style)
     height_style = xlwt.easyxf('font:height 440;')
@@ -54,23 +49,23 @@ def MakeExcel(grade):
     height_style = xlwt.easyxf('font:height 440;')
     while i <= 23:
         sheet.row(i).set_style(height_style)
-        i += 1;
+        i += 1
 
-    #标题部分
+    # 标题部分
     style = xlwt.XFStyle()
-        #设置字体
+    # 设置字体
     titleFont = xlwt.Font()
     titleFont.bold = True
     titleFont.height = 440 # 22（字号）*20=440
-        #设置居中
+    # 设置居中
     alignment = xlwt.Alignment()
     alignment.horz = alignment.HORZ_CENTER
     alignment.vert = alignment.VERT_CENTER
     style.font = titleFont
     style.alignment = alignment
-    sheet.write_merge(0, 0, 0, 4, gradeString+'课室'+patternString+'情况登记表', style)
+    sheet.write_merge(0, 0, 0, 4, gradeString+'课室'+patString+'情况登记表', style)
 
-    #表头部分
+    # 表头部分
     font = xlwt.Font()
     font.height = 220
     font.bold = False
@@ -79,7 +74,7 @@ def MakeExcel(grade):
     sheet.write_merge(1, 1, 0, 3, '检查时间：'+str(checkTime)[0:10]+' 星期'+dayOfWeek, style)
     sheet.write_merge(1, 1, 4, 4, ' 检查人：'+checker, style)
 
-    #表头2部分
+    # 表头2部分
     border = xlwt.Borders()
     border.left = xlwt.Borders.THIN
     border.left_colour = 0x000000
@@ -94,13 +89,13 @@ def MakeExcel(grade):
     style2.alignment = alignment
     style2.borders = border
     sheet.write_merge(2, 3, 0, 0, '班级', style2)
-    sheet.write_merge(2, 3, 1, 1, patternString+'人数', style2)
+    sheet.write_merge(2, 3, 1, 1, patString+'人数', style2)
     sheet.write_merge(2, 2, 2, 3, '检查内容', style2)
     sheet.write_merge(3, 3, 2, 2, '到位（4）', style2)
     sheet.write_merge(3, 3, 3, 3, '纪律（6）', style2)
     sheet.write_merge(2, 3, 4, 4, '备注', style2)
 
-    #班级数据部分
+    # 班级数据部分
     i = 4;j = 1;
     while j <= 18 :
         sheet.write_merge(i, i, 0, 0, gradeString+'（'+str(j)+'）', style2)
@@ -118,7 +113,7 @@ def MakeExcel(grade):
         if leave[j] != 0 :
             situationString += '请假'+str(leave[j])+'人 '
         if temporary[j] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event[j] != 0 :
             situationString += event[j]
         if situationString != '':
@@ -139,7 +134,8 @@ def MakeExcel(grade):
         ClassData = leancloud.Object.extend('ClassData')
         gradeQuery = ClassData.query
         gradeQuery.equal_to('grade', JUNIOR_2)
-        query_list = gradeQuery.find()
+        query3 = leancloud.Query.and_(gradeQuery,dateQuery)
+        query_list = query3.find()
         # 处理应到实到数据
         ought1 = [0, 0, 0]
         fact1 = [0, 0, 0]
@@ -147,31 +143,26 @@ def MakeExcel(grade):
         temporary1 = [0, 0, 0]
         absent1 = [0, 0, 0]
         for result in query_list:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            ought1[classroom] = result.get('ought')
+            fact1[classroom] = result.get('fact')
+            leave1[classroom] = result.get('leave')
+            temporary1[classroom] = result.get('temporary')
+            absent1[classroom] = result.get('absent')
+            print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
         situationQuery = SituationData.query
         situationQuery.equal_to('grade', JUNIOR_2)
-        query_list2 = situationQuery.find()
+        query4 = leancloud.Query.and_(situationQuery,dateQuery1)
+        query_list2 = query4.find()
         # 处理扣分数据
         event1 = ["", "", ""]
         score1 = [0, 0, 0]
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                event1[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
-                score1[classroom] = score[classroom]+result.get('score')
-                #result.set('isDownloaded',2)
-                #result.save();
+            classroom = result.get('classroom')
+            event1[classroom] = event[classroom]+result.get('location')+result.get('event')+'('+result.get('date')[11:-3]+')'
+            score1[classroom] = score[classroom]+result.get('score')
         #写入表格
         sheet.write_merge(22, 22, 0, 0, '初二（1）', style2)
         sheet.write_merge(22, 22, 1, 1, str(fact1[1])+' / '+str(ought1[1]), style2)
@@ -188,7 +179,7 @@ def MakeExcel(grade):
         if leave1[1] != 0 :
             situationString += '请假'+str(leave1[1])+'人 '
         if temporary1[1] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[1] != 0 :
             situationString += event1[1]
         if situationString != '':
@@ -211,7 +202,7 @@ def MakeExcel(grade):
         if leave1[2] != 0 :
             situationString += '请假'+str(leave1[2])+'人 '
         if temporary1[2] != 0 :
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[2] != 0 :
             situationString += event1[2]
         if situationString != '':
@@ -223,7 +214,8 @@ def MakeExcel(grade):
         ClassData = leancloud.Object.extend('ClassData')
         gradeQuery = ClassData.query
         gradeQuery.equal_to('grade', JUNIOR_3)
-        query_list = gradeQuery.find()
+        query3 = leancloud.Query.and_(gradeQuery,dateQuery)
+        query_list = query3.find()
         # 处理应到实到数据
         ought1 = [0, 0, 0]
         fact1 = [0, 0, 0]
@@ -231,31 +223,26 @@ def MakeExcel(grade):
         temporary1 = [0, 0, 0]
         absent1 = [0, 0, 0]
         for result in query_list:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                ought1[classroom] = result.get('ought')
-                fact1[classroom] = result.get('fact')
-                leave1[classroom] = result.get('leave')
-                temporary1[classroom] = result.get('temporary')
-                absent1[classroom] = result.get('absent')
-                print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            ought1[classroom] = result.get('ought')
+            fact1[classroom] = result.get('fact')
+            leave1[classroom] = result.get('leave')
+            temporary1[classroom] = result.get('temporary')
+            absent1[classroom] = result.get('absent')
+            print(ought1[classroom], fact1[classroom], temporary1[classroom], absent1[classroom])
         # 抓取扣分数据
         SituationData = leancloud.Object.extend('SituationData')
         situationQuery = SituationData.query
         situationQuery.equal_to('grade', JUNIOR_3)
-        query_list2 = situationQuery.find()
+        query4 = leancloud.Query.and_(situationQuery,dateQuery1)
+        query_list2 = query4.find()
         # 处理扣分数据
         event1 = ["", "", ""]
         score1 = [0, 0, 0]
         for result in query_list2:
-            if result.get('isDownloaded') == 1:
-                classroom = result.get('classroom')
-                event1[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
-                score1[classroom] = score[classroom] + result.get('score')
-                # result.set('isDownloaded',2)
-                # result.save();
+            classroom = result.get('classroom')
+            event1[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[11:-3] + ')'
+            score1[classroom] = score[classroom] + result.get('score')
         # 写入表格
         sheet.write_merge(22, 22, 0, 0, '初三（1）', style2)
         sheet.write_merge(22, 22, 1, 1, str(fact1[1]) + ' / ' + str(ought1[1]), style2)
@@ -272,7 +259,7 @@ def MakeExcel(grade):
         if leave1[1] != 0:
             situationString += '请假' + str(leave1[1]) + '人 '
         if temporary1[1] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[1] != 0:
             situationString += event1[1]
         if situationString != '':
@@ -295,7 +282,7 @@ def MakeExcel(grade):
         if leave1[2] != 0:
             situationString += '请假' + str(leave1[2]) + '人 '
         if temporary1[2] != 0:
-            situationString += '临'+patternString[1::1]+str(temporary[j])+'人 '
+            situationString += '临'+patString[1::1]+str(temporary[j])+'人 '
         if event1[2] != 0:
             situationString += event1[2]
         if situationString != '':
@@ -304,7 +291,7 @@ def MakeExcel(grade):
             sheet.write_merge(23, 23, 4, 4, '', style2)
 
     path = GetDesktopPath()
-    excel.save(path+"\\"+time[5:10]+gradeString+"课室午休情况登记表.xls")
+    excel.save(path+"\\"+time[5:10]+gradeString+"课室"+patString+"情况登记表.xls")
 
 # 获取桌面路径
 import os
@@ -366,13 +353,13 @@ for result in query_list:
     pattern = result.get('pattern')
     checker = result.get('checker')
     dayOfWeek1 = result.get('dayOfWeek')
-    if dayOfWeek1 == 1 : dayOfWeek = "一"
-    elif dayOfWeek1 == 2 : dayOfWeek = "二"
-    elif dayOfWeek1 == 3 : dayOfWeek = "三"
-    elif dayOfWeek1 == 4 : dayOfWeek = "四"
-    elif dayOfWeek1 == 5 : dayOfWeek = "五"
-    elif dayOfWeek1 == 6 : dayOfWeek = "六"
-    elif dayOfWeek1 == 7 : dayOfWeek = "日"
+    if dayOfWeek1 == 1 : dayOfWeek = "日"
+    elif dayOfWeek1 == 2 : dayOfWeek = "一"
+    elif dayOfWeek1 == 3 : dayOfWeek = "二"
+    elif dayOfWeek1 == 4 : dayOfWeek = "三"
+    elif dayOfWeek1 == 5 : dayOfWeek = "四"
+    elif dayOfWeek1 == 6 : dayOfWeek = "五"
+    elif dayOfWeek1 == 7 : dayOfWeek = "六"
     checkTime = str(result.get('createdAt'))
     if ((checkTime[0:10] != time[0:10]) or (int(pattern) != int(pat))) and (not isFirstResult):
         continue
@@ -393,8 +380,8 @@ event = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 score = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 for result in query_list2:
     classroom = result.get('classroom')
-    event[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' + result.get('date')[
-                                                                                               11:-3] + ')'
+    event[classroom] = event[classroom] + result.get('location') + result.get('event') + '(' \
+                       + result.get('date')[11:-3] + ')'
     score[classroom] = score[classroom] + result.get('score')
     if ((checkTime[0:10] != time[0:10]) or (pattern != pat)): continue
     # result.set('isDailyDownloaded',True)
